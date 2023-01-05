@@ -317,8 +317,8 @@
                     for (var g = history[defaultModel], r = [], i = g.length - 1; i >= 0; i--) {
                         r.push('「' + g[i].join(' ') + '」');
                     }
+                    copy(r.join(' '));
                 }
-                copy(r.join(' '));
                 openToast('已复制全部');
             });
 
