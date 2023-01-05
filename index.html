@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机数字</title>
+    <link rel="shortcut icon" href="./logo.svg">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .group-item {
+            display: flex;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .group-item .border {
+            height: 3rem;
+            width: 3rem;
+            font-size: 1rem;
+            line-height: 3rem;
+            margin: 0.25rem;
+            display: block;
+        }
+
+        .history {
+            max-height: 300px;
+            overflow: auto;
+        }
+
+        .border.union-red,
+        .border.union-blue {
+            color: white;
+            border: none !important;
+        }
+
+        .border.union-red {
+            background-color: #CC0000;
+        }
+
+        .border.union-blue {
+            background-color: #003366;
+        }
+
+        .border.lotto-yellow {
+            background-color: #f5c606;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            width: 6px;
+            background: rgba(#101F1C, 0.1);
+            border-radius: 2em;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(144, 147, 153, .5);
+            background-clip: padding-box;
+            min-height: 28px;
+            border-radius: 2em;
+            transition: background-color .3s;
+            cursor: pointer;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(144, 147, 153, .3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form class="mb-3" id="theForm">
+            <div class="mb-3 mt-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="model" value="single" id="single" checked>
+                    <label class="form-check-label" for="single">单数</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="model" value="more" id="more">
+                    <label class="form-check-label" for="more">多数</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="model" value="union" id="union">
+                    <label class="form-check-label" for="union">双色球</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="model" value="lotto" id="lotto">
+                    <label class="form-check-label" for="lotto">大乐透</label>
+                </div>
+            </div>
+            <div class="mb-3" model="single,more">
+                <label class="form-label">数字区间</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="min" placeholder="输入最小值">
+                    <span class="input-group-text"> - </span>
+                    <input type="text" class="form-control" name="max" placeholder="输入最大值">
+                </div>
+                <div class="form-text">出数区间包含最小值和最大值</div>
+            </div>
+            <div class="mb-3" model="single,more,union,lotto">
+                <label class="form-label">自定义区间</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="range" placeholder="输入自定义区间，以逗号隔开">
+                </div>
+                <div class="form-text">出数结果在自定义区间内产出</div>
+            </div>
+            <div class="mb-3 d-none" model="more,union,lotto">
+                <label class="form-label">预留数字</label>
+                <input type="text" class="form-control" name="reservation" placeholder="输入预留数字，保留多个则以逗号隔开">
+                <div class="form-text">预留数字会保留在出数结果中</div>
+            </div>
+            <div class="mb-3 d-none" model="more">
+                <label class="form-label">生成数量</label>
+                <input type="text" class="form-control" name="limit" placeholder="输入出数量">
+                <div class="form-text">决定最后生成的数字数量</div>
+            </div>
+            <div class="mb-3 d-none" model="more">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="duplicated" id="duplicated">
+                    <label class="form-check-label" for="duplicated">允许出现重复数字</label>
+                </div>
+            </div>
+            <div class="btn-group mb-3" style="width: 100%;">
+                <button type="button" class="btn btn-primary" id="build">&emsp;生成数字&emsp;</button>
+                <button type="button" class="btn btn-light" id="clean">&emsp;重置表单&emsp;</button>
+                <button type="button" class="btn btn-warning" id="remove">&emsp;清空历史&emsp;</button>
+            </div>
+        </form>
+        <!-- 出数结果 -->
+        <div class="number-group d-none"></div>
+        <p class="text-center">
+            <a class="text-muted" data-bs-toggle="collapse" href="#history" role="button" aria-expanded="false"
+                aria-controls="history">
+                点击展开∨
+            </a>
+        </p>
+        <div class="collapse history" id="history"></div>
+    </div>
+    <!-- 弹层提示 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-primary border-0" role="alert" data-bs-animation="true"
+            data-bs-autohide="true" data-bs-delay="1500" id="toast">
+            <div class="d-flex">
+                <div class="toast-body">吐司提示</div>
+            </div>
+        </div>
+    </div>
+    <!-- JS 部分 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="./random.js"></script>
+    <script>
+        $(function () {
+            var $build = $('#build'), $form = $('#theForm'), $time = $('#time'),
+                $model = $('input[name="model"]'), $result = $('.number-group'),
+                $history = $('#history'),
+                defaultModel = $('input:checked').val(),
+                toast = new bootstrap.Toast(document.getElementById('toast')),
+                history = getHistory();
+
+            // 生成按钮点击事件
+            $build.click(function () {
+                // 表单数据处理
+                var data = {}, digits = [], serialize = $form.serializeArray();
+                $.each(serialize, function (_, item) {
+                    if (item.value && !isNaN(item.value)) {
+                        item.value = item.value * 1;
+                    }
+                    data[item.name] = item.value;
+                });
+
+                // 自定义区间处理
+                data.range = data.range.split(',');
+                for (var i = 0; i < data.range.length; i++) {
+                    if (data.range[i] && !isNaN(data.range[i])) {
+                        data.range.splice(i, 1, data.range[i] * 1);
+                    } else {
+                        data.range.splice(i, 1);
+                    }
+                }
+
+                // 预留数字的处理
+                data.reservation = data.reservation.split(',');
+                for (var i = 0; i < data.reservation.length; i++) {
+                    if (data.reservation[i] && !isNaN(data.reservation[i])) {
+                        data.reservation.splice(i, 1, data.reservation[i] * 1);
+                    } else {
+                        data.reservation.splice(i, 1);
+                    }
+                }
+
+                // 是否允许重复
+                data.duplicated = $('input[name="duplicated"]').is(':checked');
+
+                // 处理不同的模式
+                if (data.model === 'single') {
+                    digits.push(randomOne(data.min, data.max, data.range));
+                } else if (data.model === 'more') {
+                    digits = randomMore(data.min, data.max, data.limit, data.reservation.concat([]), data.duplicated, data.range);
+                } else if (data.model === 'union') {
+                    digits = randomMore(1, 33, 6, data.reservation, false, data.range);
+                    digits.push(randomOne(1, 16));
+                } else if (data.model === 'lotto') {
+                    digits = randomMore(1, 35, 5, data.reservation.concat([]), false, data.range);
+                    digits = digits.concat(randomMore(1, 12, 2, data.reservation.concat([]), false, data.range));
+                }
+
+                // 缓存历史
+                handleHistory(data.model, digits);
+
+                // 更新历史数据
+                renderHistory(data.model);
+
+                // 输出结果
+                $result.removeClass('d-none').html(handleResult(digits, data.model));
+
+                openToast('随机数已生成');
+                return false;
+            });
+
+            // 处理生成结果
+            function handleResult(digits, model) {
+                if (digits instanceof Array) {
+                    for (var i = 0, h = ['<div class="text-center group-item mb-3" data-text="' + digits.join(' ') + '" title="双击复制">']; i < digits.length; i++) {
+                        var t = '<span class="border';
+                        if (model == 'union' || model == 'lotto') {
+                            t += ' rounded-5'; // 圆形样式
+                            if (model == 'union') {
+                                t += digits.length - 1 <= i ? ' union-blue' : ' union-red';
+                            }
+                            if (model == 'lotto') {
+                                t += digits.length - 2 <= i ? ' lotto-yellow' : ' union-red';
+                            }
+                        }
+                        t += '">' + digits[i] + '</span>';
+                        h.push(t);
+                    }
+                    h.push('</div>');
+                    return h.join(' ');
+                }
+            }
+
+            // 获取当前格式化时间
+            function currentTime() {
+                var now = new Date(),
+                    year = now.getFullYear(),
+                    month = now.getMonth() + 1,
+                    day = now.getDate(),
+                    hour = now.getHours(),
+                    minute = now.getMinutes(),
+                    second = now.getSeconds();
+                return year + '年' + month + '月' + day + '日 ' + hour + '时' + minute + '分' + second + '秒';
+            }
+
+            // 模式切换监听
+            $model.change(function () {
+                defaultModel = this.value;
+                renderHistory(this.value);
+                handleModel(this.value);
+            });
+
+            // 处理魂村历史数据
+            function handleHistory(model, digits) {
+                if (history[model]) {
+                    history[model].push(digits);
+                } else {
+                    history[model] = [digits];
+                }
+                setHistory(history);
+            }
+
+            // 处理模式切换
+            function handleModel(model) {
+                $('*[model]').addClass('d-none');
+                $('*[model*="' + model + '"]').removeClass('d-none');
+            }
+
+            // 渲染历史数据
+            function renderHistory(model) {
+                if (history[model]) {
+                    for (var g = history[model], r = [], i = g.length; i >= 0; i--) {
+                        r.push(handleResult(g[i], model));
+                    }
+                    $history.html(r.join(' '));
+                } else {
+                    $history.html('<div class="text-bg-light text-center p-3">无历史数据</div>');
+                }
+            }
+
+            // 弹层提示
+            function openToast(text) {
+                $('#toast').find('.toast-body').html(text);
+                toast.show();
+            }
+
+            // 折叠\展开切换事件
+            $history.bind('hide.bs.collapse', function () {
+                $('a[aria-controls="history"]').html('点击展开∨');
+            }).bind('show.bs.collapse', function () {
+                $('a[aria-controls="history"]').html('点击折叠∧');
+                renderHistory(defaultModel);
+            });
+
+            // 重置表单点击事件
+            $('#clean').click(function () {
+                $form.get(0).reset();
+                $time.addClass('d-none');
+                $('#' + defaultModel).prop('checked', true).change();
+                // 清空结果
+                $result.html('');
+            });
+
+            // 清空缓存双击事件
+            $('#remove').click(function () {
+                history = {};
+                setHistory(); // 清空历史
+                openToast('缓存已清空');
+            });
+
+            // 双击复制
+            $result.dblclick(function () {
+                copy($(this).data('text'));
+                openToast('已复制');
+            });
+
+            // 初始化模式
+            handleModel(defaultModel);
+        });
+    </script>
+</body>
+
+</html>
