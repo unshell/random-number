@@ -297,7 +297,7 @@
             // 渲染历史数据
             function renderHistory(model) {
                 if (history[model]) {
-                    for (var g = history[model], r = [], i = g.length; i >= 0; i--) {
+                    for (var g = history[model], r = [], i = g.length - 1; i >= 0; i--) {
                         r.push(handleResult(g[i], model));
                     }
                     $history.html(r.join(' '));
@@ -310,6 +310,18 @@
                     openToast('已复制');
                 });
             }
+
+            // 复制全历史记录
+            $('.form-check-label').dblclick(function () {
+                if (history[defaultModel]) {
+                    for (var g = history[defaultModel], r = [], i = g.length - 1; i >= 0; i--) {
+                        r.push('「' + g[i].join(' ') + '」');
+                    }
+                }
+                copy(r.join(' '));
+                openToast('已复制全部');
+            });
+
 
             // 弹层提示
             function openToast(text) {
