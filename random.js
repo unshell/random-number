@@ -72,7 +72,7 @@ function sort(array, random) {
  * @param {String} text
  */
 function copy(text) {
-    var transfer = document.createElement('input');
+    var transfer = document.createElement('textarea');
     document.body.appendChild(transfer);
 
     transfer.value = text;
