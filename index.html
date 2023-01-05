@@ -47,6 +47,12 @@
             background-color: #f5c606;
         }
 
+        .btn svg {
+            width: 15px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
         /* 滚动条美化 */
         ::-webkit-scrollbar {
             width: 5px;
@@ -128,17 +134,17 @@
                 </div>
             </div>
             <div class="btn-group mb-3" style="width: 100%;">
-                <button type="button" class="btn btn-primary" id="build">&emsp;生成数字&emsp;</button>
-                <button type="button" class="btn btn-light" id="clean">&emsp;重置表单&emsp;</button>
-                <button type="button" class="btn btn-warning" id="remove">&emsp;清空历史&emsp;</button>
+                <button type="button" class="btn btn-primary" id="build"><i data-feather="codepen"></i>生成数字</button>
+                <button type="button" class="btn btn-light" id="reset"><i data-feather="repeat"></i>重置表单</button>
+                <button type="button" class="btn btn-warning" id="clean"><i data-feather="trash"></i>清空历史</button>
             </div>
         </form>
         <!-- 出数结果 -->
         <div class="number-group d-none"></div>
         <p class="text-center">
-            <a class="text-muted" data-bs-toggle="collapse" href="#history" role="button" aria-expanded="false"
-                aria-controls="history">
-                点击展开∨
+            <a class="btn btn-light text-muted" data-bs-toggle="collapse" href="#history" role="button"
+                aria-expanded="false" aria-controls="history">
+                历史记录<i data-feather="chevron-down"></i>
             </a>
         </p>
         <div class="collapse history" id="history"></div>
@@ -155,9 +161,11 @@
     <!-- JS 部分 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
     <script src="./random.js"></script>
     <script>
         $(function () {
+            feather.replace()
             var $build = $('#build'), $form = $('#theForm'), $time = $('#time'),
                 $model = $('input[name="model"]'), $result = $('.number-group'),
                 $history = $('#history'),
@@ -187,7 +195,11 @@
                 }
 
                 // 预留数字的处理
-                data.reservation = data.reservation.split(',');
+                if (typeof data.reservation === 'number') {
+                    data.reservation = [data.reservation];
+                } else {
+                    data.reservation = data.reservation.split(',');
+                }
                 for (var i = 0; i < data.reservation.length; i++) {
                     if (data.reservation[i] && !isNaN(data.reservation[i])) {
                         data.reservation.splice(i, 1, data.reservation[i] * 1);
@@ -220,6 +232,13 @@
 
                 // 输出结果
                 $result.removeClass('d-none').html(handleResult(digits, data.model));
+
+                // 双击复制
+                $('.group-item').unbind('dblclick').bind('dblclick', function () {
+                    copy($(this).data('text'));
+                    openToast('已复制');
+                });
+
 
                 openToast('随机数已生成');
                 return false;
@@ -302,14 +321,16 @@
 
             // 折叠\展开切换事件
             $history.bind('hide.bs.collapse', function () {
-                $('a[aria-controls="history"]').html('点击展开∨');
+                $('a[aria-controls="history"]').html('<i data-feather="chevron-down"></i>');
+                feather.replace();
             }).bind('show.bs.collapse', function () {
-                $('a[aria-controls="history"]').html('点击折叠∧');
+                $('a[aria-controls="history"]').html('<i data-feather="chevron-up"></i>');
                 renderHistory(defaultModel);
+                feather.replace();
             });
 
             // 重置表单点击事件
-            $('#clean').click(function () {
+            $('#reset').click(function () {
                 $form.get(0).reset();
                 $time.addClass('d-none');
                 $('#' + defaultModel).prop('checked', true).change();
@@ -318,16 +339,10 @@
             });
 
             // 清空缓存双击事件
-            $('#remove').click(function () {
+            $('#clean').click(function () {
                 history = {};
                 setHistory(); // 清空历史
                 openToast('缓存已清空');
-            });
-
-            // 双击复制
-            $result.dblclick(function () {
-                copy($(this).data('text'));
-                openToast('已复制');
             });
 
             // 初始化模式
