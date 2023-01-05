@@ -135,7 +135,7 @@
             </div>
             <div class="btn-group mb-3" style="width: 100%;">
                 <button type="button" class="btn btn-primary" id="build"><i data-feather="codepen"></i>生成数字</button>
-                <button type="button" class="btn btn-light" id="reset"><i data-feather="repeat"></i>重置表单</button>
+                <button type="button" class="btn btn-light" id="remark"><i data-feather="repeat"></i>重置表单</button>
                 <button type="button" class="btn btn-warning" id="clean"><i data-feather="trash"></i>清空历史</button>
             </div>
         </form>
@@ -330,7 +330,7 @@
             });
 
             // 重置表单点击事件
-            $('#reset').click(function () {
+            $('#remark').click(function () {
                 $form.get(0).reset();
                 $time.addClass('d-none');
                 $('#' + defaultModel).prop('checked', true).change();
