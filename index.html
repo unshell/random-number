@@ -227,18 +227,11 @@
                 // 缓存历史
                 handleHistory(data.model, digits);
 
-                // 更新历史数据
-                renderHistory(data.model);
-
                 // 输出结果
                 $result.removeClass('d-none').html(handleResult(digits, data.model));
 
-                // 双击复制
-                $('.group-item').unbind('dblclick').bind('dblclick', function () {
-                    copy($(this).data('text'));
-                    openToast('已复制');
-                });
-
+                // 更新历史数据
+                renderHistory(data.model);
 
                 openToast('随机数已生成');
                 return false;
@@ -311,6 +304,11 @@
                 } else {
                     $history.html('<div class="text-bg-light text-center p-3">无历史数据</div>');
                 }
+                // 双击复制
+                $('.group-item').unbind('dblclick').bind('dblclick', function () {
+                    copy($(this).data('text'));
+                    openToast('已复制');
+                });
             }
 
             // 弹层提示
