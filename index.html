@@ -321,10 +321,10 @@
 
             // 折叠\展开切换事件
             $history.bind('hide.bs.collapse', function () {
-                $('a[aria-controls="history"]').html('<i data-feather="chevron-down"></i>');
+                $('a[aria-controls="history"]').html('历史记录<i data-feather="chevron-down"></i>');
                 feather.replace();
             }).bind('show.bs.collapse', function () {
-                $('a[aria-controls="history"]').html('<i data-feather="chevron-up"></i>');
+                $('a[aria-controls="history"]').html('历史记录<i data-feather="chevron-up"></i>');
                 renderHistory(defaultModel);
                 feather.replace();
             });
