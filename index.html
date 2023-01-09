@@ -122,6 +122,11 @@
                 <input type="text" class="form-control" name="reservation" placeholder="输入预留数字，保留多个则以逗号隔开">
                 <div class="form-text">预留数字会保留在出数结果中</div>
             </div>
+            <div class="mb-3 d-none" model="union,lotto">
+                <label class="form-label">本期号码</label>
+                <input type="text" class="form-control" name="current" placeholder="输入本期号码，以空格隔开">
+                <div class="form-text">中将数字会在历史中突出显示</div>
+            </div>
             <div class="mb-3 d-none" model="more">
                 <label class="form-label">生成数量</label>
                 <input type="text" class="form-control" name="limit" placeholder="输入出数量">
@@ -135,6 +140,7 @@
             </div>
             <div class="btn-group mb-3" style="width: 100%;">
                 <button type="button" class="btn btn-primary" id="build"><i data-feather="codepen"></i>生成数字</button>
+                <button type="button" class="btn btn-success" id="look"><i data-feather="eye"></i>查看结果</button>
                 <button type="button" class="btn btn-light" id="remark"><i data-feather="repeat"></i>重置表单</button>
                 <button type="button" class="btn btn-warning" id="clean"><i data-feather="trash"></i>清空历史</button>
             </div>
@@ -175,38 +181,7 @@
 
             // 生成按钮点击事件
             $build.click(function () {
-                // 表单数据处理
-                var data = {}, digits = [], serialize = $form.serializeArray();
-                $.each(serialize, function (_, item) {
-                    if (item.value && !isNaN(item.value)) {
-                        item.value = item.value * 1;
-                    }
-                    data[item.name] = item.value;
-                });
-
-                // 自定义区间处理
-                data.range = data.range.split(',');
-                for (var i = 0; i < data.range.length; i++) {
-                    if (data.range[i] && !isNaN(data.range[i])) {
-                        data.range.splice(i, 1, data.range[i] * 1);
-                    } else {
-                        data.range.splice(i, 1);
-                    }
-                }
-
-                // 预留数字的处理
-                if (typeof data.reservation === 'number') {
-                    data.reservation = [data.reservation];
-                } else {
-                    data.reservation = data.reservation.split(',');
-                }
-                for (var i = 0; i < data.reservation.length; i++) {
-                    if (data.reservation[i] && !isNaN(data.reservation[i])) {
-                        data.reservation.splice(i, 1, data.reservation[i] * 1);
-                    } else {
-                        data.reservation.splice(i, 1);
-                    }
-                }
+                var data = getTheFormData(), digits = [];
 
                 // 是否允许重复
                 data.duplicated = $('input[name="duplicated"]').is(':checked');
@@ -237,23 +212,49 @@
                 return false;
             });
 
+            // 查看结果按钮点击事件
+            $('#look').click(function () {
+                var data = getTheFormData();
+                if (data.current.length != 7) return false;
+                if (data.model == 'union') {
+                    handleResult()
+                }
+            });
+
             // 处理生成结果
-            function handleResult(digits, model) {
+            function handleResult(digits, model, left, right) {
+                if (left === undefined) left = [];
+                if (right === undefined) right = [];
                 if (digits instanceof Array) {
-                    for (var i = 0, h = ['<div class="text-center group-item mb-3" data-text="' + digits.join(' ') + '" title="双击复制">']; i < digits.length; i++) {
-                        var t = '<span class="border';
+                    for (var i = 0, h = []; i < digits.length; i++) {
+                        var t = '<span class="border', n = digits[i], l = [], r = [];
                         if (model == 'union' || model == 'lotto') {
                             t += ' rounded-5'; // 圆形样式
                             if (model == 'union') {
-                                t += digits.length - 1 <= i ? ' union-blue' : ' union-red';
+                                // 处理样式
+                                if (digits.length - 1 <= i) {
+                                    t += left.indexOf(n) ? ' union-blue focus' : ' union-blue';
+                                } else {
+                                    t += right.indexOf(n) ? ' union-red focus' : ' union-red';
+                                }
                             }
                             if (model == 'lotto') {
-                                t += digits.length - 2 <= i ? ' lotto-yellow' : ' union-red';
+                                // 处理样式
+                                if (digits.length - 2 <= i) {
+                                    t += left.indexOf(n) ? ' lotto-yellow focus' : ' lotto-yellow';
+                                } else {
+                                    t += right.indexOf(n) ? ' union-red focus' : ' union-red';
+                                }
                             }
+                            n = n > 10 ? n : ('0' + n);
                         }
-                        t += '">' + digits[i] + '</span>';
+                        t += '">' + n + '</span>';
                         h.push(t);
                     }
+                    // 追加首项
+                    h.splice(0, 0, '<div class="text-center group-item mb-3" data-text="' + digits.map(function (item) {
+                        return item > 10 ? item : ('0' + item);
+                    }).join(' ') + '" title="双击复制">');
                     h.push('</div>');
                     return h.join(' ');
                 }
@@ -295,7 +296,7 @@
             }
 
             // 渲染历史数据
-            function renderHistory(model) {
+            function renderHistory(model, left, right) {
                 if (history[model]) {
                     for (var g = history[model], r = [], i = g.length - 1; i >= 0; i--) {
                         r.push(handleResult(g[i], model));
@@ -311,17 +312,65 @@
                 });
             }
 
+            // 获取表单数据
+            function getTheFormData() {
+                // 表单数据处理
+                var data = {}, serialize = $form.serializeArray();
+                $.each(serialize, function (_, item) {
+                    if (item.value && !isNaN(item.value)) {
+                        item.value = item.value * 1;
+                    }
+                    data[item.name] = item.value;
+                });
+
+                // 自定义区间处理
+                data.range = data.range.split(',');
+                for (var i = 0; i < data.range.length; i++) {
+                    if (data.range[i] && !isNaN(data.range[i])) {
+                        data.range.splice(i, 1, data.range[i] * 1);
+                    } else {
+                        data.range.splice(i, 1);
+                    }
+                }
+
+                // 自定义区间处理
+                data.current = data.current.split(' ');
+                for (var i = 0; i < data.current.length; i++) {
+                    if (data.current[i] && !isNaN(data.current[i])) {
+                        data.current.splice(i, 1, data.current[i] * 1);
+                    } else {
+                        data.current.splice(i, 1);
+                    }
+                }
+
+                // 预留数字的处理
+                if (typeof data.reservation === 'number') {
+                    data.reservation = [data.reservation];
+                } else {
+                    data.reservation = data.reservation.split(',');
+                }
+                for (var i = 0; i < data.reservation.length; i++) {
+                    if (data.reservation[i] && !isNaN(data.reservation[i])) {
+                        data.reservation.splice(i, 1, data.reservation[i] * 1);
+                    } else {
+                        data.reservation.splice(i, 1);
+                    }
+                }
+                return data;
+            }
+
             // 复制全历史记录
             $('.form-check-label').dblclick(function () {
                 if (history[defaultModel]) {
                     for (var g = history[defaultModel], r = [], i = g.length - 1; i >= 0; i--) {
-                        r.push(g[i].join(' '));
+                        r.push(g[i].map(function (item) {
+                            return item > 10 ? item : ('0' + item);
+                        }).join(' '));
                     }
                     copy(r.join('\n'));
                 }
                 openToast('已复制全部');
             });
-
 
             // 弹层提示
             function openToast(text) {
