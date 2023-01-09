@@ -53,6 +53,10 @@
             vertical-align: middle;
         }
 
+        .focus {
+            box-shadow: inset 5px 5px 10px #000;
+        }
+
         /* 滚动条美化 */
         ::-webkit-scrollbar {
             width: 5px;
@@ -82,7 +86,7 @@
 
 <body>
     <div class="container">
-        <form class="mb-3" id="theForm">
+        <form class="mb-3" id="theForm" autocomplete="off">
             <div class="mb-3 mt-3">
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="model" value="single" id="single" checked>
@@ -123,10 +127,25 @@
                 <div class="form-text">预留数字会保留在出数结果中</div>
             </div>
             <div class="mb-3 d-none" model="union,lotto">
-                <label class="form-label">本期号码</label>
-                <input type="text" class="form-control" name="current" placeholder="输入本期号码，以空格隔开">
-                <div class="form-text">中将数字会在历史中突出显示</div>
+                <label class="form-label">本期中奖号码</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="current[1]">
+                    <span class="input-group-text">-</span>
+                    <input type="text" class="form-control" name="current[2]">
+                    <span class="input-group-text">-</span>
+                    <input type="text" class="form-control" name="current[3]">
+                    <span class="input-group-text">-</span>
+                    <input type="text" class="form-control" name="current[4]">
+                    <span class="input-group-text">-</span>
+                    <input type="text" class="form-control" name="current[5]">
+                    <span class="input-group-text">-</span>
+                    <input type="text" class="form-control" name="current[6]">
+                    <span class="input-group-text">-</span>
+                    <input type="text" class="form-control" name="current[7]">
+                </div>
+                <div class="form-text">中奖数字会在历史记录中突出显示</div>
             </div>
+
             <div class="mb-3 d-none" model="more">
                 <label class="form-label">生成数量</label>
                 <input type="text" class="form-control" name="limit" placeholder="输入出数量">
@@ -140,7 +159,6 @@
             </div>
             <div class="btn-group mb-3" style="width: 100%;">
                 <button type="button" class="btn btn-primary" id="build"><i data-feather="codepen"></i>生成数字</button>
-                <button type="button" class="btn btn-success" id="look"><i data-feather="eye"></i>查看结果</button>
                 <button type="button" class="btn btn-light" id="remark"><i data-feather="repeat"></i>重置表单</button>
                 <button type="button" class="btn btn-warning" id="clean"><i data-feather="trash"></i>清空历史</button>
             </div>
@@ -212,48 +230,28 @@
                 return false;
             });
 
-            // 查看结果按钮点击事件
-            $('#look').click(function () {
-                var data = getTheFormData();
-                if (data.current.length != 7) return false;
-                if (data.model == 'union') {
-                    handleResult()
-                }
-            });
-
             // 处理生成结果
-            function handleResult(digits, model, left, right) {
-                if (left === undefined) left = [];
-                if (right === undefined) right = [];
+            function handleResult(digits, model) {
                 if (digits instanceof Array) {
                     for (var i = 0, h = []; i < digits.length; i++) {
-                        var t = '<span class="border', n = digits[i], l = [], r = [];
+                        var t = '<span class="border', n = digits[i];
                         if (model == 'union' || model == 'lotto') {
                             t += ' rounded-5'; // 圆形样式
+                            n = n >= 10 ? n : ('0' + n); // 两位补全
                             if (model == 'union') {
-                                // 处理样式
-                                if (digits.length - 1 <= i) {
-                                    t += left.indexOf(n) ? ' union-blue focus' : ' union-blue';
-                                } else {
-                                    t += right.indexOf(n) ? ' union-red focus' : ' union-red';
-                                }
+                                t += digits.length - 1 <= i ? (' union-blue right-' + n) : (' union-red left-' + n);
                             }
                             if (model == 'lotto') {
-                                // 处理样式
-                                if (digits.length - 2 <= i) {
-                                    t += left.indexOf(n) ? ' lotto-yellow focus' : ' lotto-yellow';
-                                } else {
-                                    t += right.indexOf(n) ? ' union-red focus' : ' union-red';
-                                }
+                                t += digits.length - 2 <= i ? (' lotto-yellow right-' + n) : (' union-red left-' + n);
                             }
-                            n = n > 10 ? n : ('0' + n);
+
                         }
                         t += '">' + n + '</span>';
                         h.push(t);
                     }
                     // 追加首项
                     h.splice(0, 0, '<div class="text-center group-item mb-3" data-text="' + digits.map(function (item) {
-                        return item > 10 ? item : ('0' + item);
+                        return item >= 10 ? item : ('0' + item);
                     }).join(' ') + '" title="双击复制">');
                     h.push('</div>');
                     return h.join(' ');
@@ -277,6 +275,30 @@
                 defaultModel = this.value;
                 renderHistory(this.value);
                 handleModel(this.value);
+            });
+
+            // 监听输入框输入
+            $('input[name*="current"]').bind('input propertychange', function () {
+                var $this = $(this), name = $this.attr('name'),
+                    index = name.match(/\d/g)[0], value = $this.val();
+
+                if ((value + '').length >= 2) { // 长度大于两位则移位到下一个输入框
+                    $('input[name="current[' + (index * 1 + 1) + ']"]').focus();
+                    if (defaultModel == 'union') {
+                        if (index * 1 <= 6) {
+                            $('.left-' + value).addClass('focus');
+                        } else {
+                            $('.right-' + value).addClass('focus');
+                        }
+                    }
+                    if (defaultModel == 'lotto') {
+                        if (index * 1 <= 5) {
+                            $('.left-' + value).addClass('focus');
+                        } else {
+                            $('.right-' + value).addClass('focus');
+                        }
+                    }
+                }
             });
 
             // 处理魂村历史数据
@@ -364,7 +386,7 @@
                 if (history[defaultModel]) {
                     for (var g = history[defaultModel], r = [], i = g.length - 1; i >= 0; i--) {
                         r.push(g[i].map(function (item) {
-                            return item > 10 ? item : ('0' + item);
+                            return item >= 10 ? item : ('0' + item);
                         }).join(' '));
                     }
                     copy(r.join('\n'));
