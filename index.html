@@ -244,7 +244,6 @@
                             if (model == 'lotto') {
                                 t += digits.length - 2 <= i ? (' lotto-yellow right-' + n) : (' union-red left-' + n);
                             }
-
                         }
                         t += '">' + n + '</span>';
                         h.push(t);
@@ -352,16 +351,6 @@
                         data.range.splice(i, 1, data.range[i] * 1);
                     } else {
                         data.range.splice(i, 1);
-                    }
-                }
-
-                // 自定义区间处理
-                data.current = data.current.split(' ');
-                for (var i = 0; i < data.current.length; i++) {
-                    if (data.current[i] && !isNaN(data.current[i])) {
-                        data.current.splice(i, 1, data.current[i] * 1);
-                    } else {
-                        data.current.splice(i, 1);
                     }
                 }
 
