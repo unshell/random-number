@@ -53,8 +53,16 @@
             vertical-align: middle;
         }
 
-        .focus {
-            box-shadow: inset 5px 5px 10px #000;
+        .union-red.focus {
+            box-shadow: rgba(204, 0, 0, 0.4) 5px 5px, rgba(204, 0, 0, 0.3) 10px 10px, rgba(204, 0, 0, 0.2) 15px 15px, rgba(204, 0, 0, 0.1) 20px 20px, rgba(204, 0, 0, 0.05) 25px 25px;
+        }
+
+        .union-blue.focus {
+            box-shadow: rgba(0, 51, 102, 0.4) 5px 5px, rgba(0, 51, 102, 0.3) 10px 10px, rgba(0, 51, 102, 0.2) 15px 15px, rgba(0, 51, 102, 0.1) 20px 20px, rgba(0, 51, 102, 0.05) 25px 25px;
+        }
+
+        .lotto-yellow.focus {
+            box-shadow: rgba(245, 198, 6, 0.4) 5px 5px, rgba(245, 198, 6, 0.3) 10px 10px, rgba(245, 198, 6, 0.2) 15px 15px, rgba(245, 198, 6, 0.1) 20px 20px, rgba(245, 198, 6, 0.05) 25px 25px;
         }
 
         /* 滚动条美化 */
@@ -129,13 +137,13 @@
             <div class="mb-3 d-none" model="union,lotto">
                 <label class="form-label">本期中奖号码</label>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" name="current[1]">
-                    <input type="text" class="form-control" name="current[2]">
-                    <input type="text" class="form-control" name="current[3]">
-                    <input type="text" class="form-control" name="current[4]">
-                    <input type="text" class="form-control" name="current[5]">
-                    <input type="text" class="form-control" name="current[6]">
-                    <input type="text" class="form-control" name="current[7]">
+                    <input type="text" class="form-control text-center" name="current[1]">
+                    <input type="text" class="form-control text-center" name="current[2]">
+                    <input type="text" class="form-control text-center" name="current[3]">
+                    <input type="text" class="form-control text-center" name="current[4]">
+                    <input type="text" class="form-control text-center" name="current[5]">
+                    <input type="text" class="form-control text-center" name="current[6]">
+                    <input type="text" class="form-control text-center" name="current[7]">
                 </div>
                 <div class="form-text">中奖数字会在历史记录中突出显示</div>
             </div>
