@@ -297,7 +297,12 @@
             $('input[name*="current"]').bind('input propertychange', function () {
                 var $this = $(this), name = $this.attr('name'),
                     index = name.match(/\d/g)[0] * 1, value = $this.val();
-                if ((value + '').length >= 2) { // 长度大于两位则移位到下一个输入框
+                // 值为空时移位到上一个输入框
+                if (!value && index - 1 >= 0) {
+                    $('input[name="current[' + (index - 1) + ']"]').focus();
+                }
+                // 长度大于两位则移位到下一个输入框
+                if ((value + '').length >= 2) {
                     $('input[name="current[' + (index + 1) + ']"]').focus();
                     handleFocusStyle(index, value);
                 }
@@ -325,7 +330,12 @@
             $('input[name*="bought"]').bind('input propertychange', function () {
                 var $this = $(this), name = $this.attr('name'),
                     index = name.match(/\d/g)[0] * 1, value = $this.val();
-                if ((value + '').length >= 2) { // 长度大于两位则移位到下一个输入框
+                // 值为空时移位到上一个输入框
+                if (!value && index - 1 >= 0) {
+                    $('input[name="bought[' + (index - 1) + ']"]').focus();
+                }
+                // 长度大于两位则移位到下一个输入框
+                if ((value + '').length >= 2) {
                     $('input[name="bought[' + (index + 1) + ']"]').focus();
                     bought.splice(index, 1, value * 1);
                 }
@@ -390,7 +400,7 @@
                     $number.addClass('focus');
                     // 中任意三球触发
                     if (!celebration) {
-                        celebration = $number.parent().find('.focus').length >= 3;
+                        celebration = $number.siblings('.focus').length >= 3;
                     }
                 }
                 // 庆祝得奖
