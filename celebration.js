@@ -106,16 +106,16 @@ function celebrate() {
     resetParticle();
     if (frameId) animation = window.cancelAnimationFrame(frameId);
     animation = function (timestamp) {
-        console.log('startTime:' + startTime + 'timestamp:' + timestamp);
         if (timestamp !== undefined && startTime === 0) {
             startTime = timestamp;
         }
-        context.clearRect(0, 0, width, height);
+        context.clearRect(0, 0, width, height); // 清屏
         drawScreen();
-        if (timestamp === undefined || timestamp - startTime < 6000) {
+        if (timestamp === undefined || timestamp - startTime < 4000) {
             frameId = window.requestAnimationFrame(animation);
         } else {
             animation = window.cancelAnimationFrame(frameId);
+            context.clearRect(0, 0, width, height); // 清屏
         }
     };
     animation.call();
