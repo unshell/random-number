@@ -57,6 +57,15 @@
             box-shadow: rgb(0 0 0 / 40%) 0px 2px 4px, rgb(0 0 0 / 50%) 0px 10px 13px -2px, rgb(0 0 0 / 20%) 0px -8px 0px inset;
         }
 
+        canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 0;
+            pointer-events: none;
+            border: 0px solid #000;
+        }
+
         /* 滚动条美化 */
         ::-webkit-scrollbar {
             width: 5px;
@@ -126,7 +135,7 @@
                 <input type="text" class="form-control" name="reservation" placeholder="输入预留数字，保留多个则以逗号隔开">
                 <div class="form-text">预留数字会保留在出数结果中</div>
             </div>
-            <div class="mb-3 d-none" model="union,lotto">
+            <div class="mb-3 d-none" model="union,lotto,single">
                 <label class="form-label">本期中奖号码</label>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control text-center" name="current[1]">
@@ -176,11 +185,13 @@
             </div>
         </div>
     </div>
+    <canvas id="canvas"></canvas>
     <!-- JS 部分 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="./random.js"></script>
+    <script src="./celebration.js"></script>
     <script>
         $(function () {
             feather.replace()
@@ -219,6 +230,8 @@
 
                 // 更新历史数据
                 renderHistory(data.model);
+
+                celebrate();
 
                 openToast('随机数已生成');
                 return false;
@@ -273,26 +286,48 @@
             // 监听输入框输入
             $('input[name*="current"]').bind('input propertychange', function () {
                 var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0], value = $this.val();
-
+                    index = name.match(/\d/g)[0] * 1, value = $this.val();
                 if ((value + '').length >= 2) { // 长度大于两位则移位到下一个输入框
-                    $('input[name="current[' + (index * 1 + 1) + ']"]').focus();
-                    if (defaultModel == 'union') {
-                        if (index * 1 <= 6) {
-                            $('.left-' + value).addClass('focus');
-                        } else {
-                            $('.right-' + value).addClass('focus');
-                        }
-                    }
-                    if (defaultModel == 'lotto') {
-                        if (index * 1 <= 5) {
-                            $('.left-' + value).addClass('focus');
-                        } else {
-                            $('.right-' + value).addClass('focus');
-                        }
-                    }
+                    $('input[name="current[' + (index + 1) + ']"]').focus();
+                    handleFocusStyle(index, value);
                 }
             });
+
+            // 粘贴监听
+            $('input[name*="current"]').on('paste', function (e) {
+                // 防止默认的粘贴事件和防止冒泡
+                e.preventDefault();
+                e.stopPropagation();
+                // 开始处理
+                var $this = $(this), name = $this.attr('name'),
+                    index = name.match(/\d/g)[0] * 1;
+                var value = e.originalEvent.clipboardData.getData('text');
+                if (!value) return false;
+                value = value.split(' ');
+                for (var i = 0; i < value.length; i++) {
+                    $('input[name="current[' + index + ']"]').val(value[i]);
+                    handleFocusStyle(index, value[i]);
+                    index++;
+                }
+            });
+
+            // 处理中奖数字聚焦样式
+            function handleFocusStyle(index, value) {
+                if (defaultModel == 'union') {
+                    if (index <= 6) {
+                        $('.left-' + value).addClass('focus');
+                    } else {
+                        $('.right-' + value).addClass('focus');
+                    }
+                }
+                if (defaultModel == 'lotto') {
+                    if (index <= 5) {
+                        $('.left-' + value).addClass('focus');
+                    } else {
+                        $('.right-' + value).addClass('focus');
+                    }
+                }
+            }
 
             // 处理魂村历史数据
             function handleHistory(model, digits) {
