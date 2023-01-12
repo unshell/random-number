@@ -53,9 +53,21 @@
             vertical-align: middle;
         }
 
-        .focus {
-            box-shadow: rgb(0 0 0 / 40%) 0px 2px 4px, rgb(0 0 0 / 50%) 0px 10px 13px -2px, rgb(0 0 0 / 20%) 0px -8px 0px inset;
+        .union-red.focus {
+            box-shadow: rgba(204, 0, 0, 0.4) 0px 5px, rgba(204, 0, 0, 0.3) 0px 10px, rgba(204, 0, 0, 0.2) 0px 15px, rgba(204, 0, 0, 0.1) 0px 20px, rgba(204, 0, 0, 0.05) 0px 25px;
         }
+
+        .union-blue.focus {
+            box-shadow: rgba(0, 51, 102, 0.4) 0px 5px, rgba(0, 51, 102, 0.3) 0px 10px, rgba(0, 51, 102, 0.2) 0px 15px, rgba(0, 51, 102, 0.1) 0px 20px, rgba(0, 51, 102, 0.05) 0px 25px;
+        }
+
+        .lotto-yellow.focus {
+            box-shadow: rgba(245, 198, 6, 0.4) 0px 5px, rgba(245, 198, 6, 0.3) 0px 10px, rgba(245, 198, 6, 0.2) 0px 15px, rgba(245, 198, 6, 0.1) 0px 20px, rgba(245, 198, 6, 0.05) 0px 25px;
+        }
+
+        /* .focus {
+            box-shadow: rgb(0 0 0 / 40%) 0px 2px 4px, rgb(0 0 0 / 50%) 0px 10px 13px -2px, rgb(0 0 0 / 20%) 0px -8px 0px inset;
+        } */
 
         canvas {
             position: absolute;
@@ -339,7 +351,7 @@
                     $('input[name="bought[' + (index + 1) + ']"]').focus();
                     bought.splice(index, 1, value * 1);
                 }
-                checkFullNumber(bought);
+                checkFullNumber();
             });
 
             // 追加已购粘贴监听
@@ -364,8 +376,19 @@
             // 检查完整性
             function checkFullNumber() {
                 if (bought.indexOf(0) == -1) {
+                    var left = [], right = [];
                     // 缓存历史
-                    handleHistory(defaultModel, sort(bought, false));
+                    if (defaultModel == 'union') {
+                        left = sort(bought.slice(0, 6), false);
+                        right = bought.slice(6, 7);
+                        bought = left.concat(right);
+                    }
+                    if (defaultModel == 'lotto') {
+                        left = sort(bought.slice(0, 5), false);
+                        right = sort(bought.slice(5, 7), false);
+                        bought = left.concat(right);
+                    }
+                    handleHistory(defaultModel, bought);
                     // 更新历史数据
                     renderHistory(defaultModel);
                     // 重置步骤
