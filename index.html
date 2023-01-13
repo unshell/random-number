@@ -193,12 +193,12 @@
         <!-- 出数结果 -->
         <div class="number-group d-none"></div>
         <p class="text-center">
-            <a class="btn btn-light text-muted" data-bs-toggle="collapse" href="#history" role="button"
+            <a class="btn btn-light text-muted collapsed" data-bs-toggle="collapse" href="#history" role="button"
                 aria-expanded="false" aria-controls="history">
                 历史记录<i data-feather="chevron-down"></i>
             </a>
         </p>
-        <div class="collapse history" id="history"></div>
+        <div class="collapse history" id="history">123</div>
     </div>
     <!-- 弹层提示 -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -222,6 +222,7 @@
             var $build = $('#build'), $form = $('#theForm'), $time = $('#time'),
                 $model = $('input[name="model"]'), $result = $('.number-group'),
                 $history = $('#history'),
+                $a = $('a[aria-controls="history"]'),
                 defaultModel = $('input:checked').val(),
                 toast = new bootstrap.Toast(document.getElementById('toast')),
                 history = getHistory(), bought = [0, 0, 0, 0, 0, 0, 0];
@@ -310,6 +311,10 @@
                 var $this = $(this), name = $this.attr('name'),
                     index = name.match(/\d/g)[0] * 1, value = $this.val() + '',
                     now = value.substring(0, 2), next = value.substring(2, value.length);
+                // 默认打开
+                $a.hasClass('collapsed') && new bootstrap.Collapse($history.get(0), {
+                    show: true
+                });
                 // 长度大于两位则移位到下一个输入框
                 if (value.length >= 2) {
                     $('input[name="current[' + (index + 1) + ']"]').val(next).focus();
@@ -405,12 +410,13 @@
 
             // 处理中奖数字聚焦样式
             function handleFocusStyle(index, value) {
-                var $number = undefined, celebration = false;
+                var $number = undefined, max = 0, celebration = false;
                 if (defaultModel == 'union') {
                     if (index <= 6) {
                         $number = $('.left-' + value);
                     } else {
                         $number = $('.right-' + value);
+                        max = 1;
                         celebration = true;
                     }
                 }
@@ -419,6 +425,7 @@
                         $number = $('.left-' + value);
                     } else {
                         $number = $('.right-' + value);
+                        max = $number.parent().find('[class*=right-]').length;
                         // 中两个黄球触发
                         celebration = $number.parent().find('[class*=right-]').length == 2;
                     }
@@ -428,9 +435,14 @@
                     $number.addClass('focus');
                     // 中任意三球触发
                     if (!celebration) {
-                        celebration = $number.siblings('.focus').length >= 3;
+                        $number.parent().each(function () {
+                            var $this = $(this), $focus = $this.find('.focus');
+                            if ($focus.length > max) max = $focus.length;
+                            if (max >= 3) celebration = true;
+                        });
                     }
                 }
+                max > 0 && openToast('最高中了 ' + max + ' 个数字');
                 // 庆祝得奖
                 celebration && celebrate();
             }
@@ -532,10 +544,10 @@
 
             // 折叠\展开切换事件
             $history.bind('hide.bs.collapse', function () {
-                $('a[aria-controls="history"]').html('历史记录<i data-feather="chevron-down"></i>');
+                $a.html('历史记录<i data-feather="chevron-down"></i>');
                 feather.replace();
             }).bind('show.bs.collapse', function () {
-                $('a[aria-controls="history"]').html('历史记录<i data-feather="chevron-up"></i>');
+                $a.html('历史记录<i data-feather="chevron-up"></i>');
                 renderHistory(defaultModel);
                 feather.replace();
             });
