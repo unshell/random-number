@@ -308,15 +308,12 @@
             // 本期中获监听输入框输入
             $('input[name*="current"]').bind('input propertychange', function () {
                 var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0] * 1, value = $this.val();
-                // 值为空时移位到上一个输入框
-                if (!value && index - 1 >= 0) {
-                    $('input[name="current[' + (index - 1) + ']"]').focus();
-                }
+                    index = name.match(/\d/g)[0] * 1, value = $this.val() + '',
+                    now = value.substring(0, 2), next = value.substring(2, value.length);
                 // 长度大于两位则移位到下一个输入框
-                if ((value + '').length >= 2) {
-                    $('input[name="current[' + (index + 1) + ']"]').focus();
-                    handleFocusStyle(index, value);
+                if (value.length >= 2) {
+                    $('input[name="current[' + (index + 1) + ']"]').val(next).focus();
+                    handleFocusStyle(index, now);
                 }
             });
 
@@ -341,15 +338,13 @@
             // 追加已购监听输入框输入
             $('input[name*="bought"]').bind('input propertychange', function () {
                 var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0] * 1, value = $this.val();
-                // 值为空时移位到上一个输入框
-                if (!value && index - 1 >= 0) {
-                    $('input[name="bought[' + (index - 1) + ']"]').focus();
-                }
+                    index = name.match(/\d/g)[0] * 1, value = $this.val() + '',
+                    now = value.substring(0, 2), next = value.substring(2, value.length);
                 // 长度大于两位则移位到下一个输入框
-                if ((value + '').length >= 2) {
-                    $('input[name="bought[' + (index + 1) + ']"]').focus();
-                    bought.splice(index, 1, value * 1);
+                if (value.length >= 2) {
+                    $this.val(now);
+                    $('input[name="bought[' + (index + 1) + ']"]').val(next).focus();
+                    bought.splice(index, 1, now * 1);
                 }
                 checkFullNumber();
             });
@@ -371,6 +366,16 @@
                     index++;
                 }
                 checkFullNumber();
+            });
+
+            // 监听键盘输入
+            $(document).keydown(function (event) {
+                // backspace 或 delete 键
+                if (event.keyCode == 8 || event.keyCode == 46) {
+                    var $focus = $(document).find(':focus'), name = $focus.attr('name'),
+                        index = name.match(/\d/g)[0] * 1, value = $focus.val();
+                    !value && $('input[name="' + name.replace(/\d/g, index - 1) + '"]').focus();
+                }
             });
 
             // 检查完整性
