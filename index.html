@@ -24,50 +24,12 @@
             display: block;
         }
 
-        .history {
-            max-height: 300px;
-            overflow: auto;
-        }
-
-        .border.union-red,
-        .border.union-blue {
-            color: white;
-            border: none !important;
-        }
-
-        .border.union-red {
-            background-color: #CC0000;
-        }
-
-        .border.union-blue {
-            background-color: #003366;
-        }
-
-        .border.lotto-yellow {
-            background-color: #f5c606;
-        }
 
         .btn svg {
             width: 15px;
             margin-right: 5px;
             vertical-align: middle;
         }
-
-        .union-red.focus {
-            box-shadow: rgba(204, 0, 0, 0.4) 0px 5px, rgba(204, 0, 0, 0.3) 0px 10px, rgba(204, 0, 0, 0.2) 0px 15px, rgba(204, 0, 0, 0.1) 0px 20px, rgba(204, 0, 0, 0.05) 0px 25px;
-        }
-
-        .union-blue.focus {
-            box-shadow: rgba(0, 51, 102, 0.4) 0px 5px, rgba(0, 51, 102, 0.3) 0px 10px, rgba(0, 51, 102, 0.2) 0px 15px, rgba(0, 51, 102, 0.1) 0px 20px, rgba(0, 51, 102, 0.05) 0px 25px;
-        }
-
-        .lotto-yellow.focus {
-            box-shadow: rgba(245, 198, 6, 0.4) 0px 5px, rgba(245, 198, 6, 0.3) 0px 10px, rgba(245, 198, 6, 0.2) 0px 15px, rgba(245, 198, 6, 0.1) 0px 20px, rgba(245, 198, 6, 0.05) 0px 25px;
-        }
-
-        /* .focus {
-            box-shadow: rgb(0 0 0 / 40%) 0px 2px 4px, rgb(0 0 0 / 50%) 0px 10px 13px -2px, rgb(0 0 0 / 20%) 0px -8px 0px inset;
-        } */
 
         canvas {
             position: absolute;
@@ -117,61 +79,27 @@
                     <input class="form-check-input" type="radio" name="model" value="more" id="more">
                     <label class="form-check-label" for="more">多数</label>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="model" value="union" id="union">
-                    <label class="form-check-label" for="union">双色球</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="model" value="lotto" id="lotto">
-                    <label class="form-check-label" for="lotto">大乐透</label>
-                </div>
             </div>
             <div class="mb-3" model="single,more">
                 <label class="form-label">数字区间</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" name="min" placeholder="输入最小值">
+                    <input type="text" class="form-control" name="min" value="1" placeholder="输入最小值">
                     <span class="input-group-text"> - </span>
-                    <input type="text" class="form-control" name="max" placeholder="输入最大值">
+                    <input type="text" class="form-control" name="max" value="10" placeholder="输入最大值">
                 </div>
                 <div class="form-text">出数区间包含最小值和最大值</div>
             </div>
-            <div class="mb-3" model="single,more,union,lotto">
+            <div class="mb-3" model="single,more">
                 <label class="form-label">自定义区间</label>
                 <div class="input-group">
                     <input type="text" class="form-control" name="range" placeholder="输入自定义区间，以逗号隔开">
                 </div>
                 <div class="form-text">出数结果在自定义区间内产出</div>
             </div>
-            <div class="mb-3 d-none" model="more,union,lotto">
+            <div class="mb-3 d-none" model="more">
                 <label class="form-label">预留数字</label>
                 <input type="text" class="form-control" name="reservation" placeholder="输入预留数字，保留多个则以逗号隔开">
                 <div class="form-text">预留数字会保留在出数结果中</div>
-            </div>
-            <div class="mb-3 d-none" model="union,lotto">
-                <label class="form-label">追加已购号码</label>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control text-center" name="bought[0]" placeholder="[1]">
-                    <input type="text" class="form-control text-center" name="bought[1]" placeholder="[2]">
-                    <input type="text" class="form-control text-center" name="bought[2]" placeholder="[3]">
-                    <input type="text" class="form-control text-center" name="bought[3]" placeholder="[4]">
-                    <input type="text" class="form-control text-center" name="bought[4]" placeholder="[5]">
-                    <input type="text" class="form-control text-center" name="bought[5]" placeholder="[6]">
-                    <input type="text" class="form-control text-center" name="bought[6]" placeholder="[7]">
-                </div>
-                <div class="form-text">中奖数字会在历史记录中突出显示</div>
-            </div>
-            <div class="mb-3 d-none" model="union,lotto">
-                <label class="form-label">本期中奖号码</label>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control text-center" name="current[1]" placeholder="[1]">
-                    <input type="text" class="form-control text-center" name="current[2]" placeholder="[2]">
-                    <input type="text" class="form-control text-center" name="current[3]" placeholder="[3]">
-                    <input type="text" class="form-control text-center" name="current[4]" placeholder="[4]">
-                    <input type="text" class="form-control text-center" name="current[5]" placeholder="[5]">
-                    <input type="text" class="form-control text-center" name="current[6]" placeholder="[6]">
-                    <input type="text" class="form-control text-center" name="current[7]" placeholder="[7]">
-                </div>
-                <div class="form-text">中奖数字会在历史记录中突出显示</div>
             </div>
             <div class="mb-3 d-none" model="more">
                 <label class="form-label">生成数量</label>
@@ -187,18 +115,10 @@
             <div class="btn-group mb-3" style="width: 100%;">
                 <button type="button" class="btn btn-primary" id="build"><i data-feather="codepen"></i>生成数字</button>
                 <button type="button" class="btn btn-light" id="remark"><i data-feather="repeat"></i>重置表单</button>
-                <button type="button" class="btn btn-warning" id="clean"><i data-feather="trash"></i>清空历史</button>
             </div>
         </form>
         <!-- 出数结果 -->
         <div class="number-group d-none"></div>
-        <p class="text-center">
-            <a class="btn btn-light text-muted collapsed" data-bs-toggle="collapse" href="#history" role="button"
-                aria-expanded="false" aria-controls="history">
-                历史记录<i data-feather="chevron-down"></i>
-            </a>
-        </p>
-        <div class="collapse history" id="history">123</div>
     </div>
     <!-- 弹层提示 -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -239,22 +159,13 @@
                     digits.push(randomOne(data.min, data.max, data.range));
                 } else if (data.model === 'more') {
                     digits = randomMore(data.min, data.max, data.limit, data.reservation.concat([]), data.duplicated, data.range);
-                } else if (data.model === 'union') {
-                    digits = randomMore(1, 33, 6, data.reservation, false, data.range);
-                    digits.push(randomOne(1, 16));
-                } else if (data.model === 'lotto') {
-                    digits = randomMore(1, 35, 5, data.reservation.concat([]), false, data.range);
-                    digits = digits.concat(randomMore(1, 12, 2, data.reservation.concat([]), false, data.range));
                 }
-
-                // 缓存历史
-                handleHistory(data.model, digits);
 
                 // 输出结果
                 $result.removeClass('d-none').html(handleResult(digits, data.model));
 
-                // 更新历史数据
-                renderHistory(data.model);
+                // 庆祝得奖
+                celebrate();
 
                 openToast('随机数已生成');
                 return false;
@@ -265,16 +176,8 @@
                 if (digits instanceof Array) {
                     for (var i = 0, h = []; i < digits.length; i++) {
                         var t = '<span class="border', n = digits[i];
-                        if (model == 'union' || model == 'lotto') {
-                            t += ' rounded-5'; // 圆形样式
-                            n = n >= 10 ? n : ('0' + n); // 两位补全
-                            if (model == 'union') {
-                                t += digits.length - 1 <= i ? (' union-blue right-' + n) : (' union-red left-' + n);
-                            }
-                            if (model == 'lotto') {
-                                t += digits.length - 2 <= i ? (' lotto-yellow right-' + n) : (' union-red left-' + n);
-                            }
-                        }
+                        // t += ' rounded-5'; // 圆形样式
+                        // n = n >= 10 ? n : ('0' + n); // 两位补全
                         t += '">' + n + '</span>';
                         h.push(t);
                     }
@@ -302,188 +205,13 @@
             // 模式切换监听
             $model.change(function () {
                 defaultModel = this.value;
-                renderHistory(this.value);
                 handleModel(this.value);
             });
-
-            // 本期中获监听输入框输入
-            $('input[name*="current"]').bind('input propertychange', function () {
-                var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0] * 1, value = $this.val() + '',
-                    now = value.substring(0, 2), next = value.substring(2, value.length);
-                // 默认打开
-                $a.hasClass('collapsed') && new bootstrap.Collapse($history.get(0), {
-                    show: true
-                });
-                // 长度大于两位则移位到下一个输入框
-                if (value.length >= 2) {
-                    $('input[name="current[' + (index + 1) + ']"]').val(next).focus();
-                    handleFocusStyle(index, now);
-                }
-            });
-
-            // 本期中获粘贴监听
-            $('input[name*="current"]').on('paste', function (e) {
-                // 防止默认的粘贴事件和防止冒泡
-                e.preventDefault();
-                e.stopPropagation();
-                // 开始处理
-                var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0] * 1;
-                var value = e.originalEvent.clipboardData.getData('text');
-                if (!value) return false;
-                value = value.split(' ');
-                for (var i = 0; i < value.length; i++) {
-                    $('input[name="current[' + index + ']"]').val(value[i]);
-                    handleFocusStyle(index, value[i]);
-                    index++;
-                }
-            });
-
-            // 追加已购监听输入框输入
-            $('input[name*="bought"]').bind('input propertychange', function () {
-                var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0] * 1, value = $this.val() + '',
-                    now = value.substring(0, 2), next = value.substring(2, value.length);
-                // 长度大于两位则移位到下一个输入框
-                if (value.length >= 2) {
-                    $this.val(now);
-                    $('input[name="bought[' + (index + 1) + ']"]').val(next).focus();
-                    bought.splice(index, 1, now * 1);
-                }
-                checkFullNumber();
-            });
-
-            // 追加已购粘贴监听
-            $('input[name*="bought"]').on('paste', function (e) {
-                // 防止默认的粘贴事件和防止冒泡
-                e.preventDefault();
-                e.stopPropagation();
-                // 开始处理
-                var $this = $(this), name = $this.attr('name'),
-                    index = name.match(/\d/g)[0] * 1;
-                var value = e.originalEvent.clipboardData.getData('text');
-                if (!value) return false;
-                value = value.split(' ');
-                for (var i = 0; i < value.length; i++) {
-                    $('input[name="bought[' + index + ']"]').val(value[i]);
-                    bought.splice(index, 1, value[i] * 1);
-                    index++;
-                }
-                checkFullNumber();
-            });
-
-            // 监听键盘输入
-            $(document).keydown(function (event) {
-                // backspace 或 delete 键
-                if (event.keyCode == 8 || event.keyCode == 46) {
-                    var $focus = $(document).find(':focus'), name = $focus.attr('name'),
-                        index = name.match(/\d/g)[0] * 1, value = $focus.val();
-                    !value && $('input[name="' + name.replace(/\d/g, index - 1) + '"]').focus();
-                }
-            });
-
-            // 检查完整性
-            function checkFullNumber() {
-                if (bought.indexOf(0) == -1) {
-                    var left = [], right = [];
-                    // 缓存历史
-                    if (defaultModel == 'union') {
-                        left = sort(bought.slice(0, 6), false);
-                        right = bought.slice(6, 7);
-                        bought = left.concat(right);
-                    }
-                    if (defaultModel == 'lotto') {
-                        left = sort(bought.slice(0, 5), false);
-                        right = sort(bought.slice(5, 7), false);
-                        bought = left.concat(right);
-                    }
-                    handleHistory(defaultModel, bought);
-                    // 更新历史数据
-                    renderHistory(defaultModel);
-                    // 重置步骤
-                    bought = [0, 0, 0, 0, 0, 0, 0];
-                    $('input[name*="bought"]').val('').first().focus();
-                    openToast('追加成功');
-                }
-            }
-
-            // 处理中奖数字聚焦样式
-            function handleFocusStyle(index, value) {
-                var $number = undefined, max = 0, celebration = false;
-                if (defaultModel == 'union') {
-                    if (index <= 6) {
-                        $number = $('.left-' + value);
-                    } else {
-                        $number = $('.right-' + value);
-                        max = 1;
-                        celebration = true;
-                    }
-                }
-                if (defaultModel == 'lotto') {
-                    if (index <= 5) {
-                        $number = $('.left-' + value);
-                    } else {
-                        $number = $('.right-' + value);
-                        max = $number.parent().find('[class*=right-]').length;
-                        // 中两个黄球触发
-                        celebration = $number.parent().find('[class*=right-]').length == 2;
-                    }
-                }
-                // 处理突出效果
-                if ($number !== undefined) {
-                    $number.addClass('focus');
-                    // 中任意三球触发
-                    if (!celebration) {
-                        $number.parent().each(function () {
-                            var $this = $(this), $focus = $this.find('.focus');
-                            if ($focus.length > max) max = $focus.length;
-                            if (max >= 3) celebration = true;
-                        });
-                    }
-                }
-                max > 0 && openToast('最高中了 ' + max + ' 个数字');
-                // 庆祝得奖
-                celebration && celebrate();
-            }
-
-            // 处理魂村历史数据
-            function handleHistory(model, digits) {
-                if (history[model]) {
-                    for (var i = 0; i < history[model].length; i++) {
-                        // 检查重复
-                        if (history[model][i].join('') == digits.join('')) {
-                            return false;
-                        }
-                    }
-                    history[model].push(digits);
-                } else {
-                    history[model] = [digits];
-                }
-                setHistory(history);
-            }
 
             // 处理模式切换
             function handleModel(model) {
                 $('*[model]').addClass('d-none');
                 $('*[model*="' + model + '"]').removeClass('d-none');
-            }
-
-            // 渲染历史数据
-            function renderHistory(model, left, right) {
-                if (history[model]) {
-                    for (var g = history[model], r = [], i = g.length - 1; i >= 0; i--) {
-                        r.push(handleResult(g[i], model));
-                    }
-                    $history.html(r.join(' '));
-                } else {
-                    $history.html('<div class="text-bg-light text-center p-3">无历史数据</div>');
-                }
-                // 双击复制
-                $('.group-item').unbind('dblclick').bind('dblclick', function () {
-                    copy($(this).data('text'));
-                    openToast('已复制');
-                });
             }
 
             // 获取表单数据
@@ -523,6 +251,18 @@
                 return data;
             }
 
+            // 初始化模式
+            handleModel(defaultModel);
+
+            // 重置表单点击事件
+            $('#remark').click(function () {
+                $form.get(0).reset();
+                $time.addClass('d-none');
+                $('#' + defaultModel).prop('checked', true).change();
+                // 清空结果
+                $result.html('');
+            });
+
             // 复制全历史记录
             $('.form-check-label').dblclick(function () {
                 if (history[defaultModel]) {
@@ -541,36 +281,6 @@
                 $('#toast').find('.toast-body').html(text);
                 toast.show();
             }
-
-            // 折叠\展开切换事件
-            $history.bind('hide.bs.collapse', function () {
-                $a.html('历史记录<i data-feather="chevron-down"></i>');
-                feather.replace();
-            }).bind('show.bs.collapse', function () {
-                $a.html('历史记录<i data-feather="chevron-up"></i>');
-                renderHistory(defaultModel);
-                feather.replace();
-            });
-
-            // 重置表单点击事件
-            $('#remark').click(function () {
-                $form.get(0).reset();
-                $time.addClass('d-none');
-                $('#' + defaultModel).prop('checked', true).change();
-                // 清空结果
-                $result.html('');
-                openToast('表单已重置');
-            });
-
-            // 清空缓存双击事件
-            $('#clean').click(function () {
-                history = {};
-                setHistory(); // 清空历史
-                openToast('缓存已清空');
-            });
-
-            // 初始化模式
-            handleModel(defaultModel);
         });
     </script>
 </body>
